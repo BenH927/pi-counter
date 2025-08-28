@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pi Challenge</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #111;
+      color: #0f0;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #piDisplay {
+      margin-top: 20px;
+      font-size: 24px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #celebration {
+      margin-top: 30px;
+      font-size: 28px;
+      color: #ff0;
+      display: none;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pi Digit Stream</h1>
+  <button onclick="startStreaming()">Start</button>
+  <div id="piDisplay"></div>
+  <div id="celebration">🎉 Yay! You saw 1 million digits! 🎉</div>
+
+  <script>
+    let piDigits = "";
+    let index = 0;
+    let interval;
+
+    async function loadPi() {
+      const response = await fetch('pi.txt');
+      const text = await response.text();
+      piDigits = text.replace(/\s/g, ''); // remove whitespace
+    }
+
+    async function startStreaming() {
+      if (piDigits === "") {
+        await loadPi();
+      }
+      if (interval) return; // prevent multiple intervals
+      interval = setInterval(() => {
+        if (index < piDigits.length && index < 1000000) {
+          document.getElementById("piDisplay").textContent += piDigits[index];
+          index++;
+        } else {
+          clearInterval(interval);
+          document.getElementById("celebration").style.display = "block";
+        }
+      }, 1000); // 1 digit per second
+    }
+  </script>
+</body>
+</html>
